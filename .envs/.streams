@@ -1,4 +1,4 @@
-KAFKA_BOOTSTRAP_SERVER=kafka://kafka:29092
+KAFKA_BOOTSTRAP_SERVER=kafka:29092
 
 CONSUMER_ID=pen_test_v1001
 TOPIC_NAME=pen_test
@@ -7,4 +7,8 @@ OFFSET_ACK_ON_KAFKA=True
 STORE_URI=memory://
 DEBUG=True
 
-FAUST_RUN=faust -A main-stream worker -l info -p 6066
+FAUST_RUN=faust -A service worker -l info -p 6066
+
+CELERY_BROKER_URL=sqla+postgresql://admin:pass@postgres:5432/test_db
+CELERY_RESULT_BACKEND=db+postgresql://admin:pass@postgres:5432/test_db
+LOGS_DIR=../logs/

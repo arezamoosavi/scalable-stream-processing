@@ -1,6 +1,17 @@
 version: "3.3"
 
 services:
+  
+  queue:
+    build:
+      context: .
+      dockerfile: ./dockers/queue/Dockerfile
+    volumes:
+      - ./src/stream:/main
+    env_file:
+      - ./.envs/.queue
+    restart: unless-stopped
+    command: sh /run_celery.sh
 
   stream:
     build:
@@ -9,7 +20,7 @@ services:
     volumes:
       - ./src/stream:/main
     env_file:
-      - ./.envs/.stream
+      - ./.envs/.streams
     command: sh /faust_run.sh
     restart: unless-stopped
 
@@ -31,6 +42,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+
   kafka:
     image: confluentinc/cp-kafka:5.5.0
     container_name: kafka
@@ -67,21 +79,12 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100
   
-  locust_master:
-    image: locustio/locust
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=test_db
     ports:
-      - "8089:8089"
-    volumes:
-      - ./src/locust:/mnt/locust
-    depends_on:
-      - api
-    command: -f /mnt/locust/pen_test_locust.py --master -H http://api:8080
-
-  locust_worker:
-    image: locustio/locust
-    volumes:
-      - ./main/tests:/mnt/locust
-    depends_on:
-      - api
-      - locust_master
-    command: -f /mnt/locust/pen_test_locust.py --worker --master-host locust_master
+      - 5432:5432
+    restart: unless-stopped

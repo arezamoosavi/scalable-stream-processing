@@ -1,0 +1,3 @@
+CELERY_BROKER_URL=sqla+postgresql://admin:pass@postgres:5432/test_db
+CELERY_RESULT_BACKEND=db+postgresql://admin:pass@postgres:5432/test_db
+LOGS_DIR=../logs/

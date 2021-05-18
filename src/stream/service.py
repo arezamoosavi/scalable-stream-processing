@@ -1,8 +1,8 @@
 import logging
-
 import faust
+import settings
 
-from . import settings
+from celery_app.app import app as celery_service
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ pen_test_topic = app.topic(
 @app.agent(pen_test_topic)
 async def process_pen_test_topic(stream):
     async for event in stream:
+
         logger.info("the event is: " + str(event))
 
-        logger.info("process done on: " + str(event))
+        result = celery_service.send_task("test_pen", (event,))
 
-        logger.info("event saved: " + str(event))
-
+        logger.info(f"process with token {result.id} is started!")

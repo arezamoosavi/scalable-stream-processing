@@ -10,7 +10,7 @@ RUN pip install --upgrade pip \
   && rm -rf requirements.txt
 
 RUN mkdir -p /main
-COPY ./streams /main
+COPY ./src/stream /main
 
 # Faust
 COPY ./dockers/stream/faust_run.sh /faust_run.sh

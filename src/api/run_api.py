@@ -1,11 +1,14 @@
 import os
 import logging
+import uuid
+import time
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from utils.log_setup import setup_custom_logger
+
 from utils.kafka_conf import produce_data
 
 topic_name = os.getenv("TOPIC_NAME")
@@ -24,10 +27,11 @@ def base():
     return {"Hello to": "Face Verify APP!", "GO to": "/docs"}
 
 
-@app.post("/produce/pen_test")
-async def produce_data_api(data: produce_data_serial):
+@app.get("/produce/pen_test")
+async def produce_data_api():
     try:
-        produce_data(topic_name, data.dict())
+        data = {"user_id": str(uuid.uuid4().hex), "cur_time": str(time.time())}
+        produce_data(topic_name, data)
         response = {"status": 200, "info": "ok"}
 
     except Exception as e:
