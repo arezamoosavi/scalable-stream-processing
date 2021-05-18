@@ -1,0 +1,10 @@
+KAFKA_BOOTSTRAP_SERVER=kafka://kafka:29092
+
+CONSUMER_ID=pen_test_v1001
+TOPIC_NAME=pen_test
+
+OFFSET_ACK_ON_KAFKA=True
+STORE_URI=memory://
+DEBUG=True
+
+FAUST_RUN=faust -A main-stream worker -l info -p 6066

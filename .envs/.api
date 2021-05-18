@@ -1,0 +1,7 @@
+KAFKA_BOOTSTRAP_SERVER=kafka://kafka:29092
+
+FASTAPI_PORT=8080
+HOST=0.0.0.0
+
+LOGS_DIR=../logs/
+TOPIC_NAME=pen_test
