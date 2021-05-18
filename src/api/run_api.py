@@ -30,7 +30,7 @@ def base():
 @app.get("/produce/pen_test")
 async def produce_data_api():
     try:
-        data = {"user_id": str(uuid.uuid4().hex), "cur_time": str(time.time())}
+        data = {"user_id": str(uuid.uuid4().hex[:5]), "cur_time": str(time.time())}
         produce_data(topic_name, data)
         response = {"status": 200, "info": "ok"}
 

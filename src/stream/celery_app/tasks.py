@@ -18,12 +18,14 @@ logger.info("celery running!")
 
 
 @celery_app.task(name="test_pen")
-def just_do_test(data_json):
+def queue_func(data_json):
 
-    logger.info("data is here!")
+    logger.info(
+        "user_id: " + data_json["user_id"] + " cur_time: " + data_json["cur_time"]
+    )
+
     k = 0
-    for i in range(100):
-        k += 10 ** i
-    logger.info("k: " + str(k))
+    for i in range(50):
+        k += 2 ** i
 
     return data_json

@@ -7,8 +7,8 @@ stream:
 queue:
 	docker-compose up --build -d queue
 
-sacale-queue:
-	docker-compose --scale queue=3
+scale-queue:
+	docker-compose scale queue=3
 
 locust:
 	locust -f src/locust/pen_test_locust.py -P 8090
