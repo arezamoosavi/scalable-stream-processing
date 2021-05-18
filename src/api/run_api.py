@@ -15,8 +15,8 @@ app = FastAPI()
 
 
 class produce_data_serial(BaseModel):
-    user_name: str = None
-    note: str = None
+    user_id: str = None
+    cur_time: str = None
 
 
 @app.get("/")

@@ -67,3 +67,21 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 100
   
+  locust_master:
+    image: locustio/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./src/locust:/mnt/locust
+    depends_on:
+      - api
+    command: -f /mnt/locust/pen_test_locust.py --master -H http://api:8080
+
+  locust_worker:
+    image: locustio/locust
+    volumes:
+      - ./main/tests:/mnt/locust
+    depends_on:
+      - api
+      - locust_master
+    command: -f /mnt/locust/pen_test_locust.py --worker --master-host locust_master
