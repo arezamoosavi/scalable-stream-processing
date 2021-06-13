@@ -1,5 +1,7 @@
 import logging
 import faust
+from asyncio import sleep
+
 import settings
 
 from celery_app.app import app as celery_service
@@ -24,12 +26,16 @@ pen_test_topic = app.topic(
 )
 
 
-@app.agent(pen_test_topic)
+@app.agent(pen_test_topic, concurrency=10)
 async def process_pen_test_topic(stream):
-    async for event in stream:
+    async for batch_event in stream.take(10, within=5):
 
-        logger.info("the event is: " + str(event))
+        logger.info("the batch_event is: " + str(batch_event))
 
-        result = celery_service.send_task("test_pen", (event,))
+        results = [celery_service.send_task(
+            "test_pen", (event,)) for event in batch_event]
 
-        logger.info(f"process with token {result.id} is started!")
+        logger.info(
+            f"process with token {[result.id for result in results]} is started!")
+
+        await sleep(15)
