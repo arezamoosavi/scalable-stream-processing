@@ -45,11 +45,13 @@ async def process_noack_process(stream):
     async for event in stream.noack().events():
 
         logger.info("the event is: " + str(event))
-        event_msg = json.loads(event.message.value.decode("utf-8"))
+        event_msg = event.value
+
+        logger.info(event_msg)
 
         logger.info(f"process started for user: {event_msg.get('user_id')}")
         await sleep(3)
 
-        # await stream.ack(event=event)
+        await stream.ack(event=event)
 
-        # logger.info("acked: " + str(event_msg))
+        logger.info("acked: " + str(event_msg))
