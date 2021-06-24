@@ -1,10 +1,10 @@
 import logging
 import faust
 from asyncio import sleep
-
+import json
 import settings
 
-from celery_app.app import app as celery_service
+# from celery_app.app import app as celery_service
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +25,31 @@ pen_test_topic = app.topic(
     settings.topic_name, acks=settings.OFFSET_ACK_ON_KAFKA, partitions=None
 )
 
+# @app.agent(pen_test_topic, concurrency=5)
+# async def process_pen_test_topic(stream):
+#     async for batch_event in stream.take(10, within=5):
 
-@app.agent(pen_test_topic, concurrency=10)
-async def process_pen_test_topic(stream):
-    async for batch_event in stream.take(10, within=5):
+#         logger.info("the batch_event is: " + str(batch_event))
 
-        logger.info("the batch_event is: " + str(batch_event))
+#         results = [celery_service.send_task(
+#             "test_pen", (event,)) for event in batch_event]
 
-        results = [celery_service.send_task(
-            "test_pen", (event,)) for event in batch_event]
+#         logger.info(
+#             f"process with token {[result.id for result in results]} is started!")
 
-        logger.info(
-            f"process with token {[result.id for result in results]} is started!")
+#         await sleep(15)
 
-        await sleep(15)
+
+@app.agent(pen_test_topic)
+async def process_noack_process(stream):
+    async for event in stream.noack().events():
+
+        logger.info("the event is: " + str(event))
+        event_msg = json.loads(event.message.value.decode("utf-8"))
+
+        logger.info(f"process started for user: {event_msg.get('user_id')}")
+        await sleep(3)
+
+        # await stream.ack(event=event)
+
+        # logger.info("acked: " + str(event_msg))
