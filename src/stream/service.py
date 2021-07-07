@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 app = faust.App(
     id=settings.consumer_id,
+    stream_buffer_maxsize=100000,
     debug=settings.DEBUG,
     autodiscover=False,
     broker=settings.KAFKA_BOOTSTRAP_SERVER,
