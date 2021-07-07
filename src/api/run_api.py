@@ -2,6 +2,7 @@ import os
 import logging
 import uuid
 import time
+import random
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -30,8 +31,10 @@ def base():
 @app.get("/produce/pen_test")
 async def produce_data_api():
     try:
-        data = {"user_id": str(uuid.uuid4().hex[:5]), "cur_time": str(time.time())}
-        produce_data(topic_name, data)
+        msg_data = {"user_id": str(
+            uuid.uuid4().hex[:5]), "cur_time": str(time.time())}
+        produce_data(topic_name, msg_data)
+
         response = {"status": 200, "info": "ok"}
 
     except Exception as e:

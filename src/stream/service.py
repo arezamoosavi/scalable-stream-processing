@@ -22,7 +22,7 @@ app = faust.App(
 )
 
 pen_test_topic = app.topic(
-    settings.topic_name, acks=settings.OFFSET_ACK_ON_KAFKA, partitions=None
+    settings.topic_name, acks=settings.OFFSET_ACK_ON_KAFKA, partitions=10
 )
 
 # @app.agent(pen_test_topic, concurrency=5)
@@ -40,18 +40,29 @@ pen_test_topic = app.topic(
 #         await sleep(15)
 
 
+# @app.agent(pen_test_topic)
+# async def process_noack_process(stream):
+#     async for event in stream.noack().events():
+
+#         logger.info("the event is: " + str(event))
+#         event_msg = event.value
+#         logger.info(event_msg)
+
+#         logger.info(f"process started for user: {event_msg.get('user_id')}")
+#         await sleep(3)
+
+#         await stream.ack(event=event)
+
+#         logger.info("acked: " + str(event_msg))
+
 @app.agent(pen_test_topic)
 async def process_noack_process(stream):
-    async for event in stream.noack().events():
+    async for event in stream.events():
 
         logger.info("the event is: " + str(event))
-        event_msg = event.value
 
-        logger.info(event_msg)
+        partition = event.message.partition
+        offset = event.message.offset
 
-        logger.info(f"process started for user: {event_msg.get('user_id')}")
-        await sleep(3)
-
-        await stream.ack(event=event)
-
-        logger.info("acked: " + str(event_msg))
+        logger.info(f"partition: {partition} and offset: {offset}")
+        logger.info(f"value: {event.value} and key: {event.key}")
